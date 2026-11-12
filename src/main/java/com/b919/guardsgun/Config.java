@@ -89,7 +89,7 @@ public final class Config {
                     "Known TaCZ types: rifle, smg, pistol, sniper, shotgun, mg, rpg.",
                     "1.0 = normal aim, > 1.0 = worse aim, < 1.0 = better aim",
                     "Example: [\"sniper=0.4\", \"pistol=1.5\"]")
-            .defineListAllowEmpty("accuracyOverrides", List.of(), Config::validateAccuracyEntry);
+            .defineListAllowEmpty("accuracyOverrides", List.of("sniper=0.4", "pistol=2.0", "rifle=1.0", "smg=0.7", "shotgun=0.2", "mg=0.6", "rpg=0.6"), Config::validateAccuracyEntry);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 
