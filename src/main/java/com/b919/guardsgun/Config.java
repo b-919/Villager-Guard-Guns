@@ -75,7 +75,7 @@ public final class Config {
                     "How long a guard waits, in seconds, before scanning nearby ammo storages again",
                     "when none of them can serve its current need.",
                     "Measured in real seconds: 20 game ticks = 1 second.")
-            .defineInRange("refillCooldownSeconds", 30, 1, 3600);
+            .defineInRange("refillCooldownSeconds", 60, 1, 3600);
 
     private static final ModConfigSpec.DoubleValue DEFAULT_ACCURACY_MULTIPLIER = BUILDER
             .comment(
