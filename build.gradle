@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
     id 'idea'
     id 'net.neoforged.moddev' version '2.0.148'
+    id 'com.modrinth.minotaur' version '2.8.10'
+    id 'net.darkhax.curseforgegradle' version '1.1.28'
 }
 
 version = mod_version
@@ -10,6 +12,14 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    mavenCentral()
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 base {
@@ -21,6 +31,9 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 neoForge {
     // Specify the version of NeoForge to use.
     version = project.neo_version
+
+    // Validate access transformer targets at build time (recommended).
+    validateAccessTransformers = true
 
     parchment {
         mappingsVersion = project.parchment_mappings_version
@@ -96,6 +109,14 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
+    // Timeless and Classics Zero (TaCZ) - NeoForge 1.21.1, version 1.2.0.
+    // Version id O2Pfsh6w pins the exact NeoForge 1.21.1 build.
+    implementation "maven.modrinth:timeless-and-classics-zero:${tacz_version}"
+
+    // Guard Villagers - NeoForge 1.21.1, version 2.4.12.
+    // Version id JyXugpy2 pins the exact NeoForge 1.21.1 build.
+    implementation "maven.modrinth:guard-villagers:${guardvillagers_version}"
+
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -154,6 +175,97 @@ publishing {
     repositories {
         maven {
             url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+// Modrinth / CurseForge publishing
+// Put project IDs in gradle.properties. Tokens belong in the environment or in
+// ~/.gradle/gradle.properties, never in this repository.
+def modrinthProjectId = providers.gradleProperty('modrinth_project_id').getOrElse('')
+def modrinthToken = providers.gradleProperty('modrinth_token')
+        .orElse(providers.environmentVariable('MODRINTH_TOKEN'))
+        .getOrNull()
+def curseforgeProjectId = providers.gradleProperty('curseforge_project_id').getOrElse('')
+def curseforgeToken = providers.gradleProperty('curseforge_token')
+        .orElse(providers.environmentVariable('CURSEFORGE_TOKEN'))
+        .getOrNull()
+def curseforgeTaczSlug = providers.gradleProperty('curseforge_tacz_slug')
+        .getOrElse('timeless-and-classics-zero')
+def curseforgeGuardVillagersSlug = providers.gradleProperty('curseforge_guardvillagers_slug')
+        .getOrElse('guard-villagers')
+def publishChangelog = providers.fileContents(layout.projectDirectory.file('CHANGELOG.md'))
+        .asText.getOrElse("Release ${mod_version}")
+def modrinthProjectMissing = modrinthProjectId.isBlank()
+def modrinthTokenMissing = modrinthToken == null || modrinthToken.isBlank()
+def curseforgeProjectMissing = curseforgeProjectId.isBlank()
+def curseforgeTokenMissing = curseforgeToken == null || curseforgeToken.isBlank()
+
+// Requires the Modrinth version IDs (hashes) for TaCZ and Guard Villagers.
+modrinth {
+    if (modrinthToken != null && !modrinthToken.isBlank()) {
+        token = modrinthToken
+    }
+    projectId = modrinthProjectId
+    versionNumber = "${mod_version}+${minecraft_version}"
+    versionName = "${mod_name} ${mod_version} for ${minecraft_version}"
+    versionType = 'release'
+    uploadFile = jar
+    gameVersions = [minecraft_version]
+    loaders = ['neoforge']
+    changelog = publishChangelog
+    dependencies {
+        required.version 'timeless-and-classics-zero', tacz_version
+        required.version 'guard-villagers', guardvillagers_version
+    }
+}
+
+tasks.named('modrinth') {
+    notCompatibleWithConfigurationCache('Minotaur uploads are not configuration-cache compatible')
+    dependsOn tasks.named('build')
+    doFirst {
+        if (modrinthProjectMissing) {
+            throw new GradleException('Set modrinth_project_id in gradle.properties or pass -Pmodrinth_project_id=...')
+        }
+        if (modrinthTokenMissing) {
+            throw new GradleException('Set MODRINTH_TOKEN in the environment or modrinth_token in ~/.gradle/gradle.properties')
+        }
+    }
+}
+
+tasks.register('publishModrinth') {
+    group = 'publishing'
+    description = 'Builds the mod and uploads it to Modrinth.'
+    dependsOn tasks.named('modrinth')
+}
+
+// Requires the CurseForge project ID and the dependency project slugs.
+tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    group = 'publishing'
+    description = 'Builds the mod and uploads it to CurseForge.'
+    notCompatibleWithConfigurationCache('CurseForgeGradle uploads are not configuration-cache compatible')
+    dependsOn tasks.named('build')
+
+    if (curseforgeToken != null && !curseforgeToken.isBlank()) {
+        apiToken = curseforgeToken
+    }
+
+    def mainFile = upload(curseforgeProjectId.isBlank() ? '0' : curseforgeProjectId, jar)
+    mainFile.changelog = publishChangelog
+    mainFile.changelogType = 'markdown'
+    mainFile.releaseType = 'release'
+    mainFile.addGameVersion(minecraft_version)
+    mainFile.addModLoader('NeoForge')
+    mainFile.addEnvironment('Client', 'Server')
+    mainFile.addRequirement(curseforgeTaczSlug)
+    mainFile.addRequirement(curseforgeGuardVillagersSlug)
+
+    doFirst {
+        if (curseforgeProjectMissing) {
+            throw new GradleException('Set curseforge_project_id in gradle.properties or pass -Pcurseforge_project_id=...')
+        }
+        if (curseforgeTokenMissing) {
+            throw new GradleException('Set CURSEFORGE_TOKEN in the environment or curseforge_token in ~/.gradle/gradle.properties')
         }
     }
 }

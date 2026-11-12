@@ -4,8 +4,11 @@
   "package": "com.b919.guardsgun.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "GuardMixin",
+    "GuardContainerMixin"
   ],
   "client": [
+    "AbstractContainerScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
