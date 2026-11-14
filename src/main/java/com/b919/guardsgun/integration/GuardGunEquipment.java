@@ -18,20 +18,19 @@ public final class GuardGunEquipment {
     private GuardGunEquipment() {
     }
 
-    public static void equipGuard(Guard guard, RandomSource random) {
+    public static boolean equipGuard(Guard guard, RandomSource random) {
         if (!Config.enableGuns) {
-            return;
+            return false;
         }
 
         WeaponEntry weapon = pickWeightedWeapon(random);
         if (weapon == null) {
-            return;
+            return false;
         }
 
         Optional<CommonGunIndex> index = TimelessAPI.getCommonGunIndex(weapon.id());
         if (index.isEmpty()) {
-
-            return;
+            return false;
         }
 
         int magazineSize = index.get().getGunData().getAmmoAmount();
@@ -42,7 +41,7 @@ public final class GuardGunEquipment {
                 .setAmmoCount(magazineSize)
                 .build();
         if (gun.isEmpty() || IGun.getIGunOrNull(gun) == null) {
-            return;
+            return false;
         }
 
         guard.setItemSlot(EquipmentSlot.MAINHAND, gun);
@@ -54,6 +53,7 @@ public final class GuardGunEquipment {
             }
         }
 
+        return true;
     }
 
     private static WeaponEntry pickWeightedWeapon(RandomSource random) {

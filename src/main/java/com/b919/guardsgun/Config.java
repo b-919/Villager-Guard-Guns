@@ -20,6 +20,14 @@ public final class Config {
             .comment("when false the full mod gets disabled.")
             .define("enableGuns", true);
 
+    private static final ModConfigSpec.BooleanValue FRIENDLY_FIRE = BUILDER
+            .comment(
+                    "When true, guards cannot damage the mobs listed in Guard Villagers'",
+                    "'Mobs that guards actively protect when they get hurt' setting, plus team allies,",
+                    "their owner, and players with Hero of the Village. This mainly prevents stray gunshots deaths.",
+                    "Set to false to allow friendly fire.")
+            .define("friendlyFire", true);
+
     private static final ModConfigSpec.ConfigValue<List<? extends String>> WEAPON_WEIGHTS = BUILDER
             .comment(
                     "Weighted pool of TaCZ guns that guards can spawn with.",
@@ -96,6 +104,7 @@ public final class Config {
     public static final int TICKS_PER_SECOND = 20;
 
     public static boolean enableGuns;
+    public static boolean friendlyFire;
     public static AmmoMode ammoMode = AmmoMode.NORMAL;
     public static int ammoFillPercent;
     public static int ammoBoxLevel;
@@ -148,6 +157,7 @@ public final class Config {
             return;
         }
         enableGuns = ENABLE_GUNS.get();
+        friendlyFire = FRIENDLY_FIRE.get();
         ammoMode = AmmoMode.fromString(AMMO_MODE.get());
         ammoFillPercent = AMMO_FILL_PERCENT.get();
         ammoBoxLevel = AMMO_BOX_LEVEL.get();

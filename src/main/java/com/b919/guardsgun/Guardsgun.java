@@ -2,6 +2,7 @@ package com.b919.guardsgun;
 
 import com.b919.guardsgun.integration.GuardItemHandler;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -31,10 +32,22 @@ public class Guardsgun {
     public static final Supplier<AttachmentType<Boolean>> HAS_GUN_GOAL =
             ATTACHMENT_TYPES.register("has_gun_goal", () -> AttachmentType.builder(() -> false).build());
 
+    public static final Supplier<AttachmentType<Boolean>> GUN_PROCESSED =
+            ATTACHMENT_TYPES.register("gun_processed", () ->
+                    AttachmentType.builder(() -> false).serialize(Codec.BOOL).build());
+
+    public static final Supplier<AttachmentType<Integer>> GUN_ARM_TRIES =
+            ATTACHMENT_TYPES.register("gun_arm_tries", () ->
+                    AttachmentType.builder(() -> 0).build());
+
+    public static final Supplier<AttachmentType<Integer>> GUN_VERIFY_TICKS =
+            ATTACHMENT_TYPES.register("gun_verify_ticks", () ->
+                    AttachmentType.builder(() -> 0).build());
+
     public Guardsgun(IEventBus modEventBus, ModContainer modContainer) {
         ATTACHMENT_TYPES.register(modEventBus);
         modEventBus.addListener(this::registerCapabilities);
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
         LOGGER.info("GuardsGun initialized.");
     }
 
