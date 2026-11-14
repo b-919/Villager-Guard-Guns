@@ -20,7 +20,7 @@ public abstract class GuardCapabilityMixin {
     private LazyOptional<?> guardsgun$itemHandler;
 
     @Inject(method = "getCapability", at = @At("HEAD"), cancellable = true, remap = false)
-    private <T> void guardsgun$getItemHandler(Capability<T> capability, @Nullable Direction side,
+    private <T> void guardsgun$getItemHandler(Capability<T> capability, @Nullable Direction facing,
                                               CallbackInfoReturnable<LazyOptional<T>> cir) {
         Guard guard = (Guard) (Object) this;
         if (guard.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER) {

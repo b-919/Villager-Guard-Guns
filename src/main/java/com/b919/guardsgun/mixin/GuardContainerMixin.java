@@ -21,10 +21,8 @@ public abstract class GuardContainerMixin {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void guardsgun$addAmmoBoxSlot(int id, Inventory playerInventory, Container guardInventory,
                                           Guard guard, CallbackInfo ci) {
-        AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;
-        GuardAmmoBoxSlot slot = new GuardAmmoBoxSlot(guardInventory, GuardGunAmmo.AMMO_BOX_SLOT, 152, 44);
-        slot.index = menu.slots.size();
-        menu.slots.add(slot);
+        ((AbstractContainerMenuInvoker) this).guardsgun$addSlot(
+                new GuardAmmoBoxSlot(guardInventory, GuardGunAmmo.AMMO_BOX_SLOT, 152, 44));
     }
 
     @Inject(method = "quickMoveStack", at = @At("HEAD"), cancellable = true)
