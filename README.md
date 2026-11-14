@@ -2,7 +2,7 @@
 
 # Villager Guard Guns :3
 
-A NeoForge mod that gives Guard Villagers guards TaCZ guns, ammunition, and gun AI.
+A NeoForge mod(*for now*) that gives Guard Villagers guards TaCZ guns, ammunition, and gun AI.
 
 ## What this adds
 
