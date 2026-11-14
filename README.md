@@ -12,7 +12,6 @@ A NeoForge mod that gives Guard Villagers guards TaCZ guns, ammunition, and gun 
 * Guards refill and exchange ammo at nearby TaCZ ammo storages.
 * Per-gun-type accuracy multipliers.
 * Optional friendly-fire protection for guards, villagers, iron golems, allies, owners, and Hero of the Village players.
-* Creative ammo boxes are internal to guards and cannot be obtained from them.
 
 ## Requirements
 
