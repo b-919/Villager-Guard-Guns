@@ -2,7 +2,7 @@ package com.b919.guardsgun.integration;
 
 import com.b919.guardsgun.Config;
 import com.b919.guardsgun.Guardsgun;
-import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
+import com.b919.guardsgun.mixin.MobAccessor;
 import com.tacz.guns.api.item.IGun;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -12,21 +12,29 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import tallestegg.guardvillagers.common.entities.Guard;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import tallestegg.guardvillagers.configuration.GuardConfig;
+import tallestegg.guardvillagers.entities.Guard;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
-@EventBusSubscriber(modid = Guardsgun.MODID, bus = EventBusSubscriber.Bus.GAME)
+@Mod.EventBusSubscriber(modid = Guardsgun.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class GuardGunEvents {
+    private static final String TAG_GUN_PROCESSED = "guardsgun:gun_processed";
+    private static final int MAX_ARM_TRIES = 100;
+    private static final int VERIFY_TICKS = 40;
+
+    private static final Map<Guard, ArmState> ARM_STATES = new WeakHashMap<>();
+
     private GuardGunEvents() {
     }
 
@@ -38,21 +46,34 @@ public final class GuardGunEvents {
 
         GuardGunAmmo.ensureAmmoBoxSlot(guard);
 
-        if (!guard.getData(Guardsgun.HAS_GUN_GOAL.get())) {
-            guard.setData(Guardsgun.HAS_GUN_GOAL.get(), true);
+        ArmState state = stateOf(guard);
+        if (!state.goalsAdded) {
+            state.goalsAdded = true;
 
-            guard.goalSelector.addGoal(1, new GuardRefillAmmoGoal(guard));
-            guard.goalSelector.addGoal(2, new GuardGunAiGoal(guard));
+            ((MobAccessor) guard).guardsgun$getGoalSelector().addGoal(1, new GuardRefillAmmoGoal(guard));
+            ((MobAccessor) guard).guardsgun$getGoalSelector().addGoal(2, new GuardGunAiGoal(guard));
         }
 
-        if (Config.enableGuns && !guard.getData(Guardsgun.GUN_PROCESSED.get())) {
+        if (Config.enableGuns && !isGunProcessed(guard)) {
             if (hasGun(guard)) {
-                guard.setData(Guardsgun.GUN_PROCESSED.get(), true);
+                markGunProcessed(guard);
             } else {
-                guard.setData(Guardsgun.GUN_ARM_TRIES.get(), 0);
-                guard.setData(Guardsgun.PENDING_GUN.get(), true);
+                state.armTries = 0;
+                state.pendingGun = true;
             }
         }
+    }
+
+    private static ArmState stateOf(Guard guard) {
+        return ARM_STATES.computeIfAbsent(guard, ignored -> new ArmState());
+    }
+
+    private static boolean isGunProcessed(Guard guard) {
+        return guard.getPersistentData().getBoolean(TAG_GUN_PROCESSED);
+    }
+
+    private static void markGunProcessed(Guard guard) {
+        guard.getPersistentData().putBoolean(TAG_GUN_PROCESSED, true);
     }
 
     private static boolean hasGun(Guard guard) {
@@ -68,7 +89,7 @@ public final class GuardGunEvents {
     }
 
     @SubscribeEvent
-    public static void onEntityTickPost(EntityTickEvent.Post event) {
+    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         if (!(event.getEntity() instanceof Guard guard) || guard.level().isClientSide()) {
             return;
         }
@@ -76,34 +97,36 @@ public final class GuardGunEvents {
             return;
         }
 
-        if (guard.getData(Guardsgun.PENDING_GUN.get())) {
+        ArmState state = ARM_STATES.get(guard);
+        if (state == null) {
+            return;
+        }
+
+        if (state.pendingGun) {
             if (GuardGunEquipment.equipGuard(guard, guard.getRandom())) {
-                guard.setData(Guardsgun.GUN_ARM_TRIES.get(), 0);
-                guard.setData(Guardsgun.GUN_VERIFY_TICKS.get(), 40);
-                guard.removeData(Guardsgun.PENDING_GUN.get());
+                state.armTries = 0;
+                state.verifyTicks = VERIFY_TICKS;
+                state.pendingGun = false;
             } else {
-                int tries = guard.getData(Guardsgun.GUN_ARM_TRIES.get()) + 1;
-                if (tries >= 100) {
-                    guard.setData(Guardsgun.GUN_ARM_TRIES.get(), 0);
-                    guard.removeData(Guardsgun.PENDING_GUN.get());
-                } else {
-                    guard.setData(Guardsgun.GUN_ARM_TRIES.get(), tries);
+                state.armTries++;
+                if (state.armTries >= MAX_ARM_TRIES) {
+                    state.armTries = 0;
+                    state.pendingGun = false;
                 }
             }
             return;
         }
 
-        int verifyTicks = guard.getData(Guardsgun.GUN_VERIFY_TICKS.get());
-        if (verifyTicks > 0) {
+        if (state.verifyTicks > 0) {
             if (!(guard.getMainHandItem().getItem() instanceof IGun)) {
-                guard.setData(Guardsgun.GUN_VERIFY_TICKS.get(), 0);
-                guard.setData(Guardsgun.GUN_ARM_TRIES.get(), 0);
-                guard.setData(Guardsgun.PENDING_GUN.get(), true);
-            } else if (verifyTicks <= 1) {
-                guard.setData(Guardsgun.GUN_VERIFY_TICKS.get(), 0);
-                guard.setData(Guardsgun.GUN_PROCESSED.get(), true);
+                state.verifyTicks = 0;
+                state.armTries = 0;
+                state.pendingGun = true;
+            } else if (state.verifyTicks <= 1) {
+                state.verifyTicks = 0;
+                markGunProcessed(guard);
             } else {
-                guard.setData(Guardsgun.GUN_VERIFY_TICKS.get(), verifyTicks - 1);
+                state.verifyTicks--;
             }
         }
     }
@@ -127,21 +150,8 @@ public final class GuardGunEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onGunHurt(EntityHurtByGunEvent.Pre event) {
-        if (!Config.enableGuns || !Config.friendlyFire) {
-            return;
-        }
-        LivingEntity attacker = event.getAttacker();
-        if (attacker instanceof Guard guard
-                && event.getHurtEntity() instanceof LivingEntity target
-                && isFriendlyTarget(guard, target)) {
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onLivingHurt(LivingHurtEvent event) {
         if (!Config.enableGuns || !Config.friendlyFire) {
             return;
         }
@@ -172,5 +182,12 @@ public final class GuardGunEvents {
     private static boolean isGuardVillagersProtected(LivingEntity target) {
         ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
         return id != null && GuardConfig.COMMON.mobsGuardsProtectHurt.get().contains(id.toString());
+    }
+
+    private static final class ArmState {
+        private boolean goalsAdded;
+        private boolean pendingGun;
+        private int armTries;
+        private int verifyTicks;
     }
 }

@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.entities.Guard;
 
 @Mixin(Guard.class)
 public abstract class GuardMixin {

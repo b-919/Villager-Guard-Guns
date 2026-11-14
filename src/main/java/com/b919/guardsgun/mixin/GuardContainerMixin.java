@@ -13,25 +13,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import tallestegg.guardvillagers.common.entities.Guard;
-import tallestegg.guardvillagers.common.entities.GuardContainer;
+import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.entities.GuardContainer;
 
 @Mixin(GuardContainer.class)
 public abstract class GuardContainerMixin {
-    @Inject(
-            method = "<init>",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Ltallestegg/guardvillagers/common/entities/GuardContainer;addSlot"
-                            + "(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;",
-                    ordinal = 5,
-                    shift = At.Shift.AFTER
-            )
-    )
+    @Inject(method = "<init>", at = @At("TAIL"))
     private void guardsgun$addAmmoBoxSlot(int id, Inventory playerInventory, Container guardInventory,
                                           Guard guard, CallbackInfo ci) {
-        ((AbstractContainerMenu) (Object) this).addSlot(
-                new GuardAmmoBoxSlot(guardInventory, GuardGunAmmo.AMMO_BOX_SLOT, 152, 44));
+        AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;
+        GuardAmmoBoxSlot slot = new GuardAmmoBoxSlot(guardInventory, GuardGunAmmo.AMMO_BOX_SLOT, 152, 44);
+        slot.index = menu.slots.size();
+        menu.slots.add(slot);
     }
 
     @Inject(method = "quickMoveStack", at = @At("HEAD"), cancellable = true)

@@ -2,7 +2,7 @@
 
 # Villager Guard Guns :3
 
-A NeoForge mod(*for now*) that gives Guard Villagers guards TaCZ guns, ammunition, and gun AI.
+A Forge 1.20.1 mod that gives Guard Villagers guards TaCZ guns, ammunition, and gun AI.
 
 ## What this adds
 
@@ -15,10 +15,10 @@ A NeoForge mod(*for now*) that gives Guard Villagers guards TaCZ guns, ammunitio
 
 ## Requirements
 
-* Minecraft 1.21.1
-* NeoForge 21.1.x
+* Minecraft 1.20.1
+* Forge 47.x
 * [Timeless and Classics Zero (TaCZ)](https://modrinth.com/mod/timeless-and-classics-zero) 1.2.0+
-* [Guard Villagers](https://modrinth.com/mod/guard-villagers) 2.4.12+
+* [Guard Villagers](https://modrinth.com/mod/guard-villagers) 1.6.19+
 
 ## Config
 

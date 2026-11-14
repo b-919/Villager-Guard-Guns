@@ -2,10 +2,13 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.b919.guardsgun.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "guardsgun.refmap.json",
   "mixins": [
     "GuardMixin",
-    "GuardContainerMixin"
+    "GuardContainerMixin",
+    "GuardCapabilityMixin",
+    "MobAccessor"
   ],
   "client": [
     "AbstractContainerScreenMixin"

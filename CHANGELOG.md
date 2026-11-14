@@ -2,6 +2,13 @@
 
 ---
 
+## 1.0.1 (Forge 1.20.1)
+
+- Forge 1.20.1 port of GuardsGun 1.0.1.
+- Same features and fixes as the 1.21.1 NeoForge build.
+
+---
+
 ## 1.0.1
 
 - Fixed guards in already-generated villages occasionally spawning without guns.

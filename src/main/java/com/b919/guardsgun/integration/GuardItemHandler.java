@@ -1,9 +1,9 @@
 package com.b919.guardsgun.integration;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
-import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardItemHandler extends InvWrapper {
     public GuardItemHandler(Guard guard) {

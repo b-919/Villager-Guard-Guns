@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.entities.Guard;
 
 import java.util.Optional;
 
@@ -75,6 +75,6 @@ public final class GuardGunEquipment {
                 return entry;
             }
         }
-        return Config.weaponPool.getLast();
+        return Config.weaponPool.get(Config.weaponPool.size() - 1);
     }
 }
