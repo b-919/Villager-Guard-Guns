@@ -33,7 +33,7 @@ The config file is (`guardsgun-server.toml`)
 | `ammoBoxLevel`              | Ammo box tier: 0 = iron, 1 = gold, 2 = diamond.                                                                                                                               |
 | `refillAmmo`                | Whether guards refill/exchange ammo at storage blocks.                                                                                                                        |
 | `refillThresholdPercent`    | Box fill percentage at which a guard starts looking for a storage.                                                                                                            |
-| `refillAtNight`             | Whether refill/exchange is allowed at night. Default `false`.                                                                                                                 |
+| `refillAtNight`             | Whether refill/exchange is allowed at night. Default `true`.                                                                                                           |
 | `refillCooldownSeconds`     | Retry cooldown when no storage can serve the guard.                                                                                                                           |
 | `defaultAccuracyMultiplier` | Global inaccuracy multiplier. >1 is worse aim, <1 is better.                                                                                                                  |
 | `accuracyOverrides`         | Per-type inaccuracy, e.g. `"sniper=0.4"`, `"pistol=2.0"`.                                                                                                                     |
