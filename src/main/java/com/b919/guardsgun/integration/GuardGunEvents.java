@@ -48,11 +48,24 @@ public final class GuardGunEvents {
         if (Config.enableGuns && !guard.getData(Guardsgun.GUN_PROCESSED.get())) {
             if (hasGun(guard)) {
                 guard.setData(Guardsgun.GUN_PROCESSED.get(), true);
-            } else {
+            } else if (passesSpawnChance(guard)) {
                 guard.setData(Guardsgun.GUN_ARM_TRIES.get(), 0);
                 guard.setData(Guardsgun.PENDING_GUN.get(), true);
+            } else {
+                guard.setData(Guardsgun.GUN_PROCESSED.get(), true);
             }
         }
+    }
+
+    private static boolean passesSpawnChance(Guard guard) {
+        int chance = Config.gunSpawnChance;
+        if (chance >= 100) {
+            return true;
+        }
+        if (chance <= 0) {
+            return false;
+        }
+        return guard.getRandom().nextInt(100) < chance;
     }
 
     private static boolean hasGun(Guard guard) {
