@@ -6,8 +6,10 @@ import com.tacz.guns.api.GunProperties;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.pojo.data.gun.InaccuracyType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
@@ -23,8 +25,13 @@ public final class GuardGunAccuracy {
         if (iGun == null) {
             return Config.defaultAccuracyMultiplier;
         }
-        String rawType = TimelessAPI.getCommonGunIndex(iGun.getGunId(gun))
-                .map(index -> index.getType())
+        ResourceLocation gunId = iGun.getGunId(gun);
+        Double perGun = Config.gunAccuracyOverrides.get(gunId.toString());
+        if (perGun != null) {
+            return perGun;
+        }
+        String rawType = TimelessAPI.getCommonGunIndex(gunId)
+                .map(CommonGunIndex::getType)
                 .orElse(null);
         if (rawType == null) {
             return Config.defaultAccuracyMultiplier;

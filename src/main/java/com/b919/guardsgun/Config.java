@@ -41,7 +41,7 @@ public final class Config {
                     "it works by '<weight> / <sum of all weights>'. So higher weight = more common.",
                     "Leave empty to disable gun spawning.",
                     "Example: [\"tacz:ak47=50\", \"tacz:m4a1=30\", \"tacz:deagle=20\"]")
-            .defineListAllowEmpty("weaponWeights", List.of("tacz:ak47=50", "tacz:m4a1=30", "tacz:deagle=20"), Config::validateWeaponEntry);
+            .defineListAllowEmpty("weaponWeights", List.of("tacz:ak47=30", "tacz:svd=10", "tacz:rpg7=5", "tacz:type_81=30", "tacz:m1897=15", "tacz:m1911=30", "tacz:deagle=15"), Config::validateWeaponEntry);
 
     private static final ForgeConfigSpec.ConfigValue<String> AMMO_MODE = BUILDER
             .comment(
@@ -99,10 +99,12 @@ public final class Config {
 
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> ACCURACY_OVERRIDES = BUILDER
             .comment(
-                    "Per-gun-type inaccuracy multiplier. Each entry is '<type>=<multiplier>'.",
+                    "Inaccuracy multiplier per gun type or per specific gun.",
+                    "Each entry is '<type>=<multiplier>' or '<modid:gun_id>=<multiplier>'.",
+                    "Per-gun entries take priority over type entries.",
                     "Known TaCZ types: rifle, smg, pistol, sniper, shotgun, mg, rpg.",
                     "1.0 = normal aim, > 1.0 = worse aim, < 1.0 = better aim",
-                    "Example: [\"sniper=0.4\", \"pistol=1.5\"]")
+                    "Example: [\"sniper=0.4\", \"tacz:type_81=0.5\", \"pistol=1.5\"]")
             .defineListAllowEmpty("accuracyOverrides", List.of("sniper=0.4", "pistol=2.0", "rifle=1.0", "smg=0.7", "shotgun=0.2", "mg=0.6", "rpg=0.6"), Config::validateAccuracyEntry);
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
@@ -122,6 +124,7 @@ public final class Config {
     public static double defaultAccuracyMultiplier;
     public static List<WeaponEntry> weaponPool = List.of();
     public static Map<String, Double> accuracyOverrides = Map.of();
+    public static Map<String, Double> gunAccuracyOverrides = Map.of();
 
     private static boolean validateWeaponEntry(final Object obj) {
         if (!(obj instanceof String s)) {
@@ -183,11 +186,19 @@ public final class Config {
         weaponPool = List.copyOf(pool);
 
         Map<String, Double> overrides = new HashMap<>();
+        Map<String, Double> gunOverrides = new HashMap<>();
         for (String entry : ACCURACY_OVERRIDES.get()) {
             String[] parts = entry.split("=", 2);
-            overrides.put(parts[0].trim().toLowerCase(Locale.ROOT), Double.parseDouble(parts[1].trim()));
+            String key = parts[0].trim().toLowerCase(Locale.ROOT);
+            double multiplier = Double.parseDouble(parts[1].trim());
+            if (key.contains(":")) {
+                gunOverrides.put(key, multiplier);
+            } else {
+                overrides.put(key, multiplier);
+            }
         }
         accuracyOverrides = Map.copyOf(overrides);
+        gunAccuracyOverrides = Map.copyOf(gunOverrides);
     }
 
     private Config() {
