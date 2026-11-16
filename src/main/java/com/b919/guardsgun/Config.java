@@ -28,6 +28,12 @@ public final class Config {
                     "Set to false to allow friendly fire.")
             .define("friendlyFire", true);
 
+    private static final ForgeConfigSpec.IntValue GUN_SPAWN_CHANCE = BUILDER
+            .comment(
+                    "Chance, in percent, that a guard spawns with a gun.",
+                    "100 = every guard gets a gun (default). 0 = guards never spawn with guns.")
+            .defineInRange("gunSpawnChance", 100, 0, 100);
+
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> WEAPON_WEIGHTS = BUILDER
             .comment(
                     "Weighted pool of TaCZ guns that guards can spawn with.",
@@ -104,6 +110,7 @@ public final class Config {
     public static final int TICKS_PER_SECOND = 20;
 
     public static boolean enableGuns;
+    public static int gunSpawnChance;
     public static boolean friendlyFire;
     public static AmmoMode ammoMode = AmmoMode.NORMAL;
     public static int ammoFillPercent;
@@ -157,6 +164,7 @@ public final class Config {
             return;
         }
         enableGuns = ENABLE_GUNS.get();
+        gunSpawnChance = GUN_SPAWN_CHANCE.get();
         friendlyFire = FRIENDLY_FIRE.get();
         ammoMode = AmmoMode.fromString(AMMO_MODE.get());
         ammoFillPercent = AMMO_FILL_PERCENT.get();

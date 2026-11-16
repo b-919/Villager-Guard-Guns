@@ -57,11 +57,23 @@ public final class GuardGunEvents {
         if (Config.enableGuns && !isGunProcessed(guard)) {
             if (hasGun(guard)) {
                 markGunProcessed(guard);
-            } else {
+            } else if (passesSpawnChance(guard)) {
                 state.armTries = 0;
                 state.pendingGun = true;
+            } else {
+                markGunProcessed(guard);
             }
         }
+    }
+    private static boolean passesSpawnChance(Guard guard) {
+        int chance = Config.gunSpawnChance;
+        if (chance >= 100) {
+            return true;
+        }
+        if (chance <= 0) {
+            return false;
+        }
+        return guard.getRandom().nextInt(100) < chance;
     }
 
     private static ArmState stateOf(Guard guard) {

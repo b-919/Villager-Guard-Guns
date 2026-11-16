@@ -12,10 +12,16 @@ version = mod_version
 group = mod_group_id
 
 base {
-    archivesName = mod_id
+    archivesName = "${mod_id}-forge"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+// Forge's maven can fail to serve maven-metadata for modlauncher's dynamic 10.0.+ version.
+// Pin the version shipped with Forge 1.20.1-47.3.0 so dependency resolution stays deterministic.
+configurations.configureEach {
+    resolutionStrategy.force 'cpw.mods:modlauncher:10.0.9'
+}
 
 minecraft {
     mappings channel: 'official', version: minecraft_version
