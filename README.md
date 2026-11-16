@@ -37,7 +37,7 @@ The config file is (`guardsgun-server.toml`)
 | `refillAtNight`             | Whether refill/exchange is allowed at night. Default `true`.                                                                                                                   |
 | `refillCooldownSeconds`     | Retry cooldown when no storage can serve the guard.                                                                                                                            |
 | `defaultAccuracyMultiplier` | Global inaccuracy multiplier. >1 is worse aim, <1 is better.                                                                                                                   |
-| `accuracyOverrides`         | Per-type inaccuracy, e.g. `"sniper=0.4"`, `"pistol=2.0"`.                                                                                                                      |
+| `accuracyOverrides`         | Per-type or per-gun inaccuracy, e.g. `"sniper=0.4"` or `"tacz:type_81=0.5"`. Per-gun entries take priority.                                                                    |
 | `friendlyFire`              | Default `true`. Prevents guards from damaging Guard Villagers' protected mobs, team allies, their owner, and Hero of the Village players. Set `false` to allow friendly fire.  |
 
 The friendly-fire protected mobs come from Guard Villagers' `"Mobs that guards actively protect when they get hurt"` list. Add custom villagers or allies there if you use modded villages.
