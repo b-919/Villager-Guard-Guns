@@ -228,8 +228,12 @@ public class AccuracyOverridesScreen extends Screen {
                     TYPE_TOP + TYPE_HEIGHT + 40 + listHeight / 2, 0xA0A0A0);
         }
         if (guns.isEmpty()) {
+            int centerX = MARGIN + panelWidth / 2;
+            int centerY = TYPE_TOP + TYPE_HEIGHT + 40 + listHeight / 2;
             graphics.drawCenteredString(this.font, Component.translatable("guardsgun.config.accuracy.noGuns"),
-                    MARGIN + panelWidth / 2, TYPE_TOP + TYPE_HEIGHT + 40 + listHeight / 2, 0xFFAA00);
+                    centerX, centerY - 6, 0xFFAA00);
+            graphics.drawCenteredString(this.font, Component.translatable("guardsgun.config.accuracy.noGuns2"),
+                    centerX, centerY + 6, 0xFFAA00);
         }
     }
 

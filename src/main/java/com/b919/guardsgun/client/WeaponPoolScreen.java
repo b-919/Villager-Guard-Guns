@@ -153,8 +153,12 @@ public class WeaponPoolScreen extends Screen {
                     MARGIN + panelWidth + GAP + panelWidth / 2, TOP + listHeight / 2, 0xA0A0A0);
         }
         if (guns.isEmpty()) {
+            int centerX = MARGIN + panelWidth / 2;
+            int centerY = TOP + listHeight / 2;
             graphics.drawCenteredString(this.font, Component.translatable("guardsgun.config.weaponPool.noGuns"),
-                    MARGIN + panelWidth / 2, TOP + listHeight / 2, 0xFFAA00);
+                    centerX, centerY - 6, 0xFFAA00);
+            graphics.drawCenteredString(this.font, Component.translatable("guardsgun.config.weaponPool.noGuns2"),
+                    centerX, centerY + 6, 0xFFAA00);
         }
     }
 
