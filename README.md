@@ -19,26 +19,29 @@ A Forge 1.20.1 and NeoForge 1.21.1 mod that gives Guard Villagers guards TaCZ gu
 * Forge 47.x
 * [Timeless and Classics Zero (TaCZ)](https://modrinth.com/mod/timeless-and-classics-zero) 1.2.0+
 * [Guard Villagers](https://modrinth.com/mod/guard-villagers) 1.6.19+
+* [Cloth Config API](https://modrinth.com/mod/cloth-config) (optional, adds the in-game settings screen)
 
 ## Config
 
-The config file is (`guardsgun-server.toml`)
+The config file is (`guardsgun-common.toml`). If you are updating from a build that used `guardsgun-server.toml`, copy those values into the new file once.
 
-| Key                         | Description                                                                                                                                                                    |
-|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `enableGuns`                | Master switch. `false` disables the mod's gun behavior.                                                                                                                        |
-| `gunSpawnChance`            | Chance, in percent (0-100, default `100`), that a guard spawns with a gun. Rolled once per guard; `0` means guards never spawn with guns but still use guns players give them. |
-| `weaponWeights`             | Weighted gun pool, e.g. `"tacz:ak47=50"`. Chance = weight / total weight.                                                                                                      |
-| `ammoMode`                  | `NORMAL` (finite reserve, default), `INFINITEMAGS` (infinite reserve), or `INFINITEAMMO` (magazine never empties).                                                             |
-| `ammoFillPercent`           | How full the spawn ammo box is, 0–100.                                                                                                                                         |
-| `ammoBoxLevel`              | Ammo box tier: 0 = iron, 1 = gold, 2 = diamond.                                                                                                                                |
-| `refillAmmo`                | Whether guards refill/exchange ammo at storage blocks.                                                                                                                         |
-| `refillThresholdPercent`    | Box fill percentage at which a guard starts looking for a storage.                                                                                                             |
-| `refillAtNight`             | Whether refill/exchange is allowed at night. Default `true`.                                                                                                                   |
-| `refillCooldownSeconds`     | Retry cooldown when no storage can serve the guard.                                                                                                                            |
-| `defaultAccuracyMultiplier` | Global inaccuracy multiplier. >1 is worse aim, <1 is better.                                                                                                                   |
-| `accuracyOverrides`         | Per-type or per-gun inaccuracy, e.g. `"sniper=0.4"` or `"tacz:type_81=0.5"`. Per-gun entries take priority.                                                                    |
-| `friendlyFire`              | Default `true`. Prevents guards from damaging Guard Villagers' protected mobs, team allies, their owner, and Hero of the Village players. Set `false` to allow friendly fire.  |
+With Cloth Config installed, the settings can be edited in-game (Mods → GuardsGun → Config)
+
+| Key                         | Description                                                                                                                                                                          |
+|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enableGuns`                | Master switch. `false` disables the mod's gun behavior.                                                                                                                              |
+| `gunSpawnChance`            | Chance, in percent (0-100, default `100`), that a guard spawns with a gun. Rolled once per guard; `0` means guards never spawn with guns but still use guns players give them.       |
+| `weaponWeights`             | Weighted gun pool, e.g. `"tacz:ak47=50"`. Chance = weight / total weight. In-game this is edited with an icon picker: select a gun, enter a weight, add it.                          |
+| `ammoMode`                  | `NORMAL` (finite reserve, default), `INFINITEMAGS` (infinite reserve), or `INFINITEAMMO` (magazine never empties).                                                                   |
+| `ammoFillPercent`           | How full the spawn ammo box is, 0–100.                                                                                                                                               |
+| `ammoBoxLevel`              | Ammo box tier: 0 = iron, 1 = gold, 2 = diamond.                                                                                                                                      |
+| `refillAmmo`                | Whether guards refill/exchange ammo at storage blocks.                                                                                                                               |
+| `refillThresholdPercent`    | Box fill percentage at which a guard starts looking for a storage.                                                                                                                   |
+| `refillAtNight`             | Whether refill/exchange is allowed at night. Default `true`.                                                                                                                         |
+| `refillCooldownSeconds`     | Retry cooldown when no storage can serve the guard.                                                                                                                                  |
+| `defaultAccuracyMultiplier` | Global inaccuracy multiplier. >1 is worse aim, <1 is better.                                                                                                                         |
+| `accuracyOverrides`         | Per-type or per-gun inaccuracy, e.g. `"sniper=0.4"`, `"dmr=0.6"`, or `"tacz:type_81=0.5"`. Per-gun entries take priority. In-game this is edited with type cells and an icon picker. |
+| `friendlyFire`              | Default `true`. Prevents guards from damaging Guard Villagers' protected mobs, team allies, their owner, and Hero of the Village players. Set `false` to allow friendly fire.        |
 
 The friendly-fire protected mobs come from Guard Villagers' `"Mobs that guards actively protect when they get hurt"` list. Add custom villagers or allies there if you use modded villages.
 

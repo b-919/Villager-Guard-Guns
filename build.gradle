@@ -84,6 +84,9 @@ dependencies {
     minecraft "net.minecraftforge:forge:${forge_version}"
     implementation fg.deobf("maven.modrinth:timeless-and-classics-zero:${tacz_version}")
     implementation fg.deobf("maven.modrinth:guard-villagers:${guardvillagers_version}")
+    // Cloth Config API - optional, used only for the in-game config screen.
+    // Not bundled or required; the mod falls back to a notice screen when it is absent.
+    implementation fg.deobf("maven.modrinth:cloth-config:${cloth_config_version}")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

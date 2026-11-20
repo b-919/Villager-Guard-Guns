@@ -2,6 +2,16 @@
 
 ---
 
+## 1.1.0 (Forge 1.20.1)
+
+- Added an optional Cloth Config in-game settings screen. Without Cloth Config the mod still works and shows a notice.
+- Added an icon picker for the weapon pool: select a TaCZ gun, enter a weight, and add it to the pool.
+- Added an in-game accuracy editor: type cells plus per-gun icon pickers.
+- Added the DMR (marksman rifle) gun-type to accuracy type with a default override.
+- The config is now a common config (`guardsgun-common.toml`) so it can be edited in-game from any screen. Existing `guardsgun-server.toml` values should be copied over once.
+
+---
+
 ## 1.0.2 (Forge 1.20.1)
 
 - Added the `gunSpawnChance` config option (0-100, default `100`) controlling the chance that a guard spawns with a gun. It is rolled once per guard, so it does not affect guards that already spawned/had custom weapons. - 300anthem suggestion 

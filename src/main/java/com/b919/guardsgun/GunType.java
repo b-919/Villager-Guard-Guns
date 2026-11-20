@@ -10,6 +10,7 @@ public enum GunType {
     SHOTGUN("shotgun"),
     MG("mg"),
     RPG("rpg"),
+    MARKSMAN("dmr"),
     OTHER("other");
 
     private final String taCzName;
