@@ -116,6 +116,9 @@ dependencies {
     // Guard Villagers - NeoForge 1.21.1, version 2.4.12.
     // Version id JyXugpy2 pins the exact NeoForge 1.21.1 build.
     implementation "maven.modrinth:guard-villagers:${guardvillagers_version}"
+    // Cloth Config API - optional, used only for the in-game config screen.
+    // Not bundled or required; the mod falls back to a notice screen when it is absent.
+    implementation "maven.modrinth:cloth-config:${cloth_config_version}"
 
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

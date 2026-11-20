@@ -1,7 +1,5 @@
 package com.b919.guardsgun.integration;
 
-import com.b919.guardsgun.AmmoMode;
-import com.b919.guardsgun.Config;
 import com.b919.guardsgun.Guardsgun;
 import com.tacz.guns.api.item.IAmmoBox;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +21,7 @@ public class GuardAmmoBoxSlot extends Slot {
 
     @Override
     public boolean isActive() {
-        return Config.ammoMode == AmmoMode.NORMAL && !GuardGunAmmo.isInfiniteAmmoBox(getItem());
+        return !GuardGunAmmo.isInfiniteAmmoBox(getItem());
     }
 
     @Override
