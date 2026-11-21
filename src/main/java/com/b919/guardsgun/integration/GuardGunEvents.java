@@ -38,6 +38,10 @@ public final class GuardGunEvents {
 
         GuardGunAmmo.ensureAmmoBoxSlot(guard);
 
+        if (guard.getMainHandItem().getItem() instanceof IGun) {
+            GuardGunEquipment.forceRightHanded(guard);
+        }
+
         if (!guard.getData(Guardsgun.HAS_GUN_GOAL.get())) {
             guard.setData(Guardsgun.HAS_GUN_GOAL.get(), true);
 

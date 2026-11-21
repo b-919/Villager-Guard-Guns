@@ -44,6 +44,7 @@ public final class GuardGunEquipment {
             return false;
         }
 
+        forceRightHanded(guard);
         guard.setItemSlot(EquipmentSlot.MAINHAND, gun);
 
         if (ammoId != null) {
@@ -54,6 +55,12 @@ public final class GuardGunEquipment {
         }
 
         return true;
+    }
+
+    public static void forceRightHanded(Guard guard) {
+        if (guard.isLeftHanded()) {
+            guard.setLeftHanded(false);
+        }
     }
 
     private static WeaponEntry pickWeightedWeapon(RandomSource random) {
