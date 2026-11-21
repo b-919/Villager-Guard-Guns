@@ -46,6 +46,11 @@ public final class GuardGunEvents {
 
         GuardGunAmmo.ensureAmmoBoxSlot(guard);
 
+        // Guards armed before this check existed (or loaded from an older save) may be left-handed.
+        if (guard.getMainHandItem().getItem() instanceof IGun) {
+            GuardGunEquipment.forceRightHanded(guard);
+        }
+
         ArmState state = stateOf(guard);
         if (!state.goalsAdded) {
             state.goalsAdded = true;

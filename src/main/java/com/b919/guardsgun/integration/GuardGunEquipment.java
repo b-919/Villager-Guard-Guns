@@ -44,6 +44,7 @@ public final class GuardGunEquipment {
             return false;
         }
 
+        forceRightHanded(guard);
         guard.setItemSlot(EquipmentSlot.MAINHAND, gun);
 
         if (ammoId != null) {
@@ -54,6 +55,18 @@ public final class GuardGunEquipment {
         }
 
         return true;
+    }
+
+    /**
+     * TaCZ only renders a gun held in the third-person right hand; a left-handed mob renders
+     * its main-hand item on the left arm, where TaCZ deliberately draws no gun (that arm is
+     * reserved for hiding offhand guns). Vanilla makes 5% of every mob spawn left-handed, so
+     * those guards would shoot with an invisible gun. Guards always carry guns in the right hand.
+     */
+    public static void forceRightHanded(Guard guard) {
+        if (guard.isLeftHanded()) {
+            guard.setLeftHanded(false);
+        }
     }
 
     private static WeaponEntry pickWeightedWeapon(RandomSource random) {
