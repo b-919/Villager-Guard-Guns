@@ -4,6 +4,7 @@ import com.b919.guardsgun.client.ClientConfigSetup;
 import com.b919.guardsgun.integration.GuardItemHandler;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -46,6 +47,12 @@ public class Guardsgun {
     public static final Supplier<AttachmentType<Integer>> GUN_VERIFY_TICKS =
             ATTACHMENT_TYPES.register("gun_verify_ticks", () ->
                     AttachmentType.builder(() -> 0).build());
+
+    public static final Supplier<AttachmentType<ItemStack>> SAVED_AMMO_BOX =
+            ATTACHMENT_TYPES.register("saved_ammo_box", () ->
+                    AttachmentType.builder(() -> ItemStack.EMPTY)
+                            .serialize(ItemStack.OPTIONAL_CODEC)
+                            .build());
 
     public Guardsgun(IEventBus modEventBus, ModContainer modContainer) {
         ATTACHMENT_TYPES.register(modEventBus);

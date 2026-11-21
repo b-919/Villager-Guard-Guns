@@ -42,6 +42,8 @@ public class GuardRefillAmmoGoal extends Goal {
             return false;
         }
 
+        GuardGunAmmo.ensureAmmoMode(guard);
+
         ResourceLocation ammoId = GuardGunAmmo.getGunAmmoId(guard.getMainHandItem());
         if (ammoId == null) {
             return false;
@@ -89,6 +91,8 @@ public class GuardRefillAmmoGoal extends Goal {
         if (!Config.refillAtNight && guard.level().isNight()) {
             return false;
         }
+
+        GuardGunAmmo.ensureAmmoMode(guard);
 
         ResourceLocation ammoId = GuardGunAmmo.getGunAmmoId(guard.getMainHandItem());
         if (ammoId == null) {

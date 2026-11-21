@@ -2,6 +2,7 @@ package com.b919.guardsgun.integration;
 
 import com.b919.guardsgun.AmmoMode;
 import com.b919.guardsgun.Config;
+import com.b919.guardsgun.Guardsgun;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
@@ -83,6 +84,49 @@ public final class GuardGunAmmo {
             }
         }
         return box;
+    }
+
+    public static void ensureAmmoMode(Guard guard) {
+        ResourceLocation ammoId = getGunAmmoId(guard.getMainHandItem());
+        if (ammoId == null) {
+            return;
+        }
+        ItemStack box = getAmmoBox(guard);
+        if (!(box.getItem() instanceof IAmmoBox iBox)) {
+            if (Config.ammoMode != AmmoMode.INFINITEAMMO) {
+                setAmmoBox(guard, createAmmoBox(ammoId));
+            }
+            return;
+        }
+
+        if (Config.ammoMode == AmmoMode.NORMAL) {
+            if (isInfiniteAmmoBox(box)) {
+                setAmmoBox(guard, restoreSavedAmmoBox(guard, ammoId));
+            }
+        } else if (Config.ammoMode == AmmoMode.INFINITEMAGS) {
+            if (!isInfiniteAmmoBox(box)) {
+                saveAmmoBox(guard, box);
+                iBox.setAmmoId(box, ammoId);
+                iBox.setCreative(box, false);
+            } else if (!iBox.isAllTypeCreative(box) && !ammoId.equals(iBox.getAmmoId(box))) {
+                iBox.setAmmoId(box, ammoId);
+            }
+        }
+    }
+
+    private static void saveAmmoBox(Guard guard, ItemStack box) {
+        guard.setData(Guardsgun.SAVED_AMMO_BOX.get(), box.copy());
+    }
+
+    private static ItemStack restoreSavedAmmoBox(Guard guard, ResourceLocation ammoId) {
+        ItemStack saved = guard.getData(Guardsgun.SAVED_AMMO_BOX.get());
+        if (!saved.isEmpty()) {
+            guard.setData(Guardsgun.SAVED_AMMO_BOX.get(), ItemStack.EMPTY);
+            if (saved.getItem() instanceof IAmmoBox) {
+                return saved;
+            }
+        }
+        return createAmmoBox(ammoId);
     }
 
     public static ResourceLocation getGunAmmoId(ItemStack gun) {
