@@ -7,6 +7,8 @@ import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.init.ModItems;
+import com.tacz.guns.resource.index.CommonAmmoIndex;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +18,8 @@ import tallestegg.guardvillagers.entities.Guard;
 public final class GuardGunAmmo {
 
     public static final int AMMO_BOX_SLOT = 6;
+
+    private static final String SAVED_BOX_TAG = "guardsgun:saved_ammo_box";
 
     private GuardGunAmmo() {
     }
@@ -85,6 +89,51 @@ public final class GuardGunAmmo {
         return box;
     }
 
+    public static void ensureAmmoMode(Guard guard) {
+        ResourceLocation ammoId = getGunAmmoId(guard.getMainHandItem());
+        if (ammoId == null) {
+            return;
+        }
+        ItemStack box = getAmmoBox(guard);
+        if (!(box.getItem() instanceof IAmmoBox iBox)) {
+            if (Config.ammoMode != AmmoMode.INFINITEAMMO) {
+                setAmmoBox(guard, createAmmoBox(ammoId));
+            }
+            return;
+        }
+
+        if (Config.ammoMode == AmmoMode.NORMAL) {
+            if (isInfiniteAmmoBox(box)) {
+                setAmmoBox(guard, restoreSavedAmmoBox(guard, ammoId));
+            }
+        } else if (Config.ammoMode == AmmoMode.INFINITEMAGS) {
+            if (!isInfiniteAmmoBox(box)) {
+                saveAmmoBox(guard, box);
+                iBox.setAmmoId(box, ammoId);
+                iBox.setCreative(box, false);
+            } else if (!iBox.isAllTypeCreative(box) && !ammoId.equals(iBox.getAmmoId(box))) {
+                iBox.setAmmoId(box, ammoId);
+            }
+        }
+    }
+
+    private static void saveAmmoBox(Guard guard, ItemStack box) {
+        guard.getPersistentData().put(SAVED_BOX_TAG, box.save(new CompoundTag()));
+    }
+
+    private static ItemStack restoreSavedAmmoBox(Guard guard, ResourceLocation ammoId) {
+        CompoundTag data = guard.getPersistentData();
+        if (data.contains(SAVED_BOX_TAG)) {
+            CompoundTag saved = data.getCompound(SAVED_BOX_TAG);
+            data.remove(SAVED_BOX_TAG);
+            ItemStack box = ItemStack.of(saved);
+            if (box.getItem() instanceof IAmmoBox) {
+                return box;
+            }
+        }
+        return createAmmoBox(ammoId);
+    }
+
     public static ResourceLocation getGunAmmoId(ItemStack gun) {
         IGun iGun = IGun.getIGunOrNull(gun);
         if (iGun == null) {
@@ -100,7 +149,7 @@ public final class GuardGunAmmo {
             return Integer.MAX_VALUE;
         }
         int stackSize = TimelessAPI.getCommonAmmoIndex(ammoId)
-                .map(index -> index.getStackSize())
+                .map(CommonAmmoIndex::getStackSize)
                 .orElse(64);
         int levelMultiplier = iBox.getAmmoLevel(box) + 1;
         return stackSize * SyncConfig.AMMO_BOX_STACK_SIZE.get() * levelMultiplier;

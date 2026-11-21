@@ -2,6 +2,14 @@
 
 ---
 
+## 1.1.1 (Forge 1.20.1)
+
+- Fixed left-handed guards not showing their gun.
+- Fixed guards keeping a finite ammo box after switching to `INFINITEMAGS`.
+- Switching ammo modes no longer creates free ammo. A guard's finite box is kept while in `INFINITEMAGS` and restored when switching back.
+
+---
+
 ## 1.1.0 (Forge 1.20.1)
 
 - Added an optional Cloth Config in-game settings screen. Without Cloth Config the mod still works and shows a notice.

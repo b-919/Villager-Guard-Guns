@@ -73,6 +73,7 @@ public class GuardGunAiGoal extends Goal {
             return;
         }
 
+        GuardGunAmmo.ensureAmmoMode(guard);
         GuardGunAmmo.refillMagazine(guard);
 
         ReloadState.StateType reloadState = operator.getSynReloadState().getStateType();
